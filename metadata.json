@@ -1,0 +1,7 @@
+{
+  "name": "MyGhost v2.0",
+  "description": "A sophisticated personal AI Agent with multi-model support, Telegram integration, and cloud memory.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}

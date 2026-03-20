@@ -1,0 +1,7 @@
+{
+  "apiKey": "DUMMY_KEY",
+  "authDomain": "DUMMY_DOMAIN",
+  "projectId": "DUMMY_PROJECT_ID",
+  "appId": "DUMMY_APP_ID",
+  "firestoreDatabaseId": "(default)"
+}

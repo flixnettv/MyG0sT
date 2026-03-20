@@ -1,11 +1,25 @@
-<div align="center">
+# 👻 MyGhost v2.0 - المساعد الذكي الشخصي المتطور
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+MyGhost هو نظام AI Agent متكامل يدعم نماذج متعددة، مع واجهة محادثة عصرية ونظام إدارة نماذج ذكي.
 
-  <h1>Built with AI Studio</h2>
+## 🚀 الميزات الرئيسية
+- 🤖 **دعم نماذج متعددة**: التبديل بين Gemini, Groq, ACE3.
+- ⚡ **ACE3**: محاكاة للنماذج المحلية فائقة السرعة.
+- 💨 **Groq**: استجابات فورية باستخدام تقنية Groq.
+- 🧠 **Gemini Pro**: للتحليلات العميقة والمهام المعقدة.
+- 📱 **واجهة عصرية**: تصميم أنيق يدعم اللغة العربية والوضع الليلي.
+- ⚙️ **إدارة النماذج**: لوحة تحكم لاختيار المحرك المناسب.
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+## 🛠️ البدء السريع
+1. قم بتثبيت التبعيات: `npm install`
+2. أضف مفتاح Gemini API في الإعدادات.
+3. ابدأ الخادم: `npm run dev`
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+## 📚 التوثيق
+- [ملخص التحديث v2.0](./VERSION_2_UPDATE.md)
+- [دليل النماذج المتعددة](./MULTI_MODEL_GUIDE.md)
+- [إعداد ACE3](./ACE3_SETUP.md)
+- [أمثلة سريعة](./QUICK_EXAMPLES.md)
 
-</div>
+---
+تم التطوير بواسطة ❤️ للمطورين العرب

@@ -1,0 +1,32 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap');
+
+@theme {
+  --font-sans: "Inter", "IBM Plex Sans Arabic", ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  @apply bg-zinc-950 text-zinc-100 antialiased;
+  font-family: var(--font-sans);
+}
+
+.glass {
+  @apply bg-zinc-900/50 backdrop-blur-xl border border-white/10;
+}
+
+.chat-bubble-user {
+  @apply bg-emerald-600 text-white rounded-2xl rounded-tr-none px-4 py-2 shadow-lg;
+}
+
+.chat-bubble-ai {
+  @apply bg-zinc-800 text-zinc-100 rounded-2xl rounded-tl-none px-4 py-2 shadow-lg border border-white/5;
+}
+
+/* RTL Support */
+[dir="rtl"] .chat-bubble-user {
+  @apply rounded-tr-2xl rounded-tl-none;
+}
+
+[dir="rtl"] .chat-bubble-ai {
+  @apply rounded-tl-2xl rounded-tr-none;
+}
