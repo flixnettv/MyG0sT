@@ -1,0 +1,9 @@
+mkdir -p /tmp/reports-clean
+rsync -a --delete --exclude '.git' ./ /tmp/reports-clean/
+cd /tmp/reports-clean
+git init
+git checkout -b main
+git add .
+git commit -m "Initial clean snapshot"
+git remote add origin https://github.com/flixnettv/Reports.git
+git push -u origin main
