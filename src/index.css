@@ -5,13 +5,37 @@
   --font-sans: "Inter", "IBM Plex Sans Arabic", ui-sans-serif, system-ui, sans-serif;
 }
 
+:root {
+  --bg-color: #ffffff;
+  --text-color: #18181b;
+  --glass-bg: rgba(244, 244, 245, 0.8);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --chat-ai-bg: #f4f4f5;
+  --chat-ai-text: #18181b;
+  --chat-ai-border: rgba(0, 0, 0, 0.05);
+}
+
+.dark {
+  --bg-color: #09090b;
+  --text-color: #f4f4f5;
+  --glass-bg: rgba(24, 24, 27, 0.5);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --chat-ai-bg: #27272a;
+  --chat-ai-text: #f4f4f5;
+  --chat-ai-border: rgba(255, 255, 255, 0.05);
+}
+
 body {
-  @apply bg-zinc-950 text-zinc-100 antialiased;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  @apply antialiased transition-colors duration-300;
   font-family: var(--font-sans);
 }
 
 .glass {
-  @apply bg-zinc-900/50 backdrop-blur-xl border border-white/10;
+  background-color: var(--glass-bg);
+  @apply backdrop-blur-xl border transition-all duration-300;
+  border-color: var(--glass-border);
 }
 
 .chat-bubble-user {
@@ -19,7 +43,10 @@ body {
 }
 
 .chat-bubble-ai {
-  @apply bg-zinc-800 text-zinc-100 rounded-2xl rounded-tl-none px-4 py-2 shadow-lg border border-white/5;
+  background-color: var(--chat-ai-bg);
+  color: var(--chat-ai-text);
+  @apply rounded-2xl rounded-tl-none px-4 py-2 shadow-lg border transition-all duration-300;
+  border-color: var(--chat-ai-border);
 }
 
 /* RTL Support */

@@ -5,9 +5,9 @@ import Chat from "./components/Chat";
 import Settings from "./components/Settings";
 import { modelManager, ModelId } from "./core/model-manager";
 import { ErrorBoundary } from "./components/ErrorBoundary";
-import { auth, db } from "./firebase";
+import { auth, db, handleFirestoreError, OperationType } from "./firebase";
 import { signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, User as FirebaseUser } from "firebase/auth";
-import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, limit } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, limit, doc, setDoc, getDoc } from "firebase/firestore";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -29,21 +29,54 @@ function MainApp() {
   const [currentModelId, setCurrentModelId] = useState<ModelId>(ModelId.GEMINI_FLASH);
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const saved = localStorage.getItem("darkMode");
+    return saved ? JSON.parse(saved) : true; // Default to dark mode
+  });
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (u) => {
+    const unsubscribe = onAuthStateChanged(auth, async (u) => {
       setUser(u);
       setIsAuthReady(true);
+      
+      if (u) {
+        // Save user profile if it doesn't exist
+        const userRef = doc(db, "users", u.uid);
+        try {
+          const userDoc = await getDoc(userRef);
+          if (!userDoc.exists()) {
+            await setDoc(userRef, {
+              email: u.email,
+              displayName: u.displayName,
+              photoURL: u.photoURL,
+              createdAt: serverTimestamp(),
+            });
+          }
+        } catch (error) {
+          handleFirestoreError(error, OperationType.WRITE, `users/${u.uid}`);
+        }
+      }
     });
     return () => unsubscribe();
   }, []);
+
+  // Apply dark mode class to html element
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+    localStorage.setItem("darkMode", JSON.stringify(isDarkMode));
+  }, [isDarkMode]);
 
   // Sync messages with Firestore
   useEffect(() => {
     if (!user || !isAuthReady) return;
 
+    const path = `users/${user.uid}/messages`;
     const q = query(
-      collection(db, `users/${user.uid}/messages`),
+      collection(db, path),
       orderBy("timestamp", "asc"),
       limit(50)
     );
@@ -59,6 +92,8 @@ function MainApp() {
         } as Message;
       });
       setMessages(msgs);
+    }, (error) => {
+      handleFirestoreError(error, OperationType.GET, path);
     });
 
     return () => unsubscribe();
@@ -72,9 +107,10 @@ function MainApp() {
 
     setIsTyping(true);
     
+    const path = `users/${user.uid}/messages`;
     // Save user message to Firestore
     try {
-      await addDoc(collection(db, `users/${user.uid}/messages`), {
+      await addDoc(collection(db, path), {
         role: "user",
         content,
         timestamp: serverTimestamp(),
@@ -83,7 +119,7 @@ function MainApp() {
       const response = await modelManager.generateResponse(content, messages);
       
       // Save AI response to Firestore
-      await addDoc(collection(db, `users/${user.uid}/messages`), {
+      await addDoc(collection(db, path), {
         role: "assistant",
         content: response,
         timestamp: serverTimestamp(),
@@ -91,7 +127,7 @@ function MainApp() {
 
       return response;
     } catch (error) {
-      console.error("Failed to send message:", error);
+      handleFirestoreError(error, OperationType.WRITE, path);
       return "Error";
     } finally {
       setIsTyping(false);
@@ -122,7 +158,7 @@ function MainApp() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-950 selection:bg-emerald-500/30">
+    <div className="min-h-screen flex flex-col bg-[var(--bg-color)] selection:bg-emerald-500/30 transition-colors duration-300">
       {/* Background decoration */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-500/10 blur-[120px] rounded-full" />
@@ -130,24 +166,24 @@ function MainApp() {
       </div>
 
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 glass border-x-0 border-t-0 bg-zinc-950/80">
+      <nav className="sticky top-0 z-50 glass border-x-0 border-t-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
                 <Ghost className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
+              <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-[var(--text-color)] to-zinc-400 bg-clip-text text-transparent">
                 MyGhost <span className="text-emerald-500">v2.0</span>
               </span>
             </div>
 
-            <div className="flex items-center gap-1 bg-zinc-900/50 p-1 rounded-2xl border border-white/5">
+            <div className="flex items-center gap-1 bg-zinc-500/10 p-1 rounded-2xl border border-black/5 dark:border-white/5">
               <button
                 onClick={() => setActiveTab("chat")}
                 className={cn(
                   "flex items-center gap-2 px-4 py-1.5 rounded-xl text-sm font-medium transition-all",
-                  activeTab === "chat" ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20" : "text-zinc-400 hover:text-white"
+                  activeTab === "chat" ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20" : "text-zinc-500 hover:text-[var(--text-color)]"
                 )}
               >
                 <MessageSquare className="w-4 h-4" />
@@ -157,7 +193,7 @@ function MainApp() {
                 onClick={() => setActiveTab("settings")}
                 className={cn(
                   "flex items-center gap-2 px-4 py-1.5 rounded-xl text-sm font-medium transition-all",
-                  activeTab === "settings" ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20" : "text-zinc-400 hover:text-white"
+                  activeTab === "settings" ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20" : "text-zinc-500 hover:text-[var(--text-color)]"
                 )}
               >
                 <SettingsIcon className="w-4 h-4" />
@@ -168,7 +204,7 @@ function MainApp() {
             <div className="flex items-center gap-4">
               {user ? (
                 <div className="flex items-center gap-3">
-                  <img src={user.photoURL || ""} alt={user.displayName || ""} className="w-8 h-8 rounded-full border border-white/10" />
+                  <img src={user.photoURL || ""} alt={user.displayName || ""} className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10" />
                   <button onClick={handleLogout} className="text-zinc-500 hover:text-red-400 transition-colors">
                     <LogOut className="w-5 h-5" />
                   </button>
@@ -176,7 +212,7 @@ function MainApp() {
               ) : (
                 <button 
                   onClick={handleLogin}
-                  className="flex items-center gap-2 px-4 py-1.5 bg-white/5 hover:bg-white/10 rounded-xl text-sm font-medium transition-all border border-white/10"
+                  className="flex items-center gap-2 px-4 py-1.5 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-xl text-sm font-medium transition-all border border-black/10 dark:border-white/10"
                 >
                   <LogIn className="w-4 h-4" />
                   دخول
@@ -197,7 +233,7 @@ function MainApp() {
               <p className="text-sm text-zinc-400">سجل دخولك لحفظ محادثاتك والوصول إلى ميزات v2.0 الكاملة.</p>
               <button 
                 onClick={handleLogin}
-                className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 rounded-xl font-bold transition-all shadow-lg shadow-emerald-500/20"
+                className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 rounded-xl font-bold transition-all shadow-lg shadow-emerald-500/20 text-white"
               >
                 تسجيل الدخول بجوجل
               </button>
@@ -232,6 +268,8 @@ function MainApp() {
                 <Settings 
                   currentModelId={currentModelId} 
                   onModelChange={handleModelChange} 
+                  isDarkMode={isDarkMode}
+                  onDarkModeToggle={() => setIsDarkMode(!isDarkMode)}
                 />
               </motion.div>
             )}
@@ -240,7 +278,7 @@ function MainApp() {
       </main>
 
       {/* Footer */}
-      <footer className="py-6 border-t border-white/5 bg-zinc-950/50">
+      <footer className="py-6 border-t border-black/5 dark:border-white/5 bg-[var(--bg-color)]/50">
         <div className="max-w-7xl mx-auto px-4 text-center space-y-2">
           <div className="flex items-center justify-center gap-2 text-zinc-500 text-sm">
             <Sparkles className="w-4 h-4 text-emerald-500" />
