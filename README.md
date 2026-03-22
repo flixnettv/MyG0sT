@@ -1,25 +1,51 @@
-# 👻 MyGhost v2.0 - المساعد الذكي الشخصي المتطور
+# 🤖 MyGhost v2.0
 
-MyGhost هو نظام AI Agent متكامل يدعم نماذج متعددة، مع واجهة محادثة عصرية ونظام إدارة نماذج ذكي.
+نظام AI Agent متطور يدعم 4 نماذج ذكية مختلفة.
 
-## 🚀 الميزات الرئيسية
-- 🤖 **دعم نماذج متعددة**: التبديل بين Gemini, Groq, ACE3.
-- ⚡ **ACE3**: محاكاة للنماذج المحلية فائقة السرعة.
-- 💨 **Groq**: استجابات فورية باستخدام تقنية Groq.
-- 🧠 **Gemini Pro**: للتحليلات العميقة والمهام المعقدة.
-- 📱 **واجهة عصرية**: تصميم أنيق يدعم اللغة العربية والوضع الليلي.
-- ⚙️ **إدارة النماذج**: لوحة تحكم لاختيار المحرك المناسب.
+## ✨ المميزات
 
-## 🛠️ البدء السريع
-1. قم بتثبيت التبعيات: `npm install`
-2. أضف مفتاح Gemini API في الإعدادات.
-3. ابدأ الخادم: `npm run dev`
+- 4 نماذج AI (Claude, Groq, ACE3, Custom)
+- Telegram Bot للتفاعل الفوري
+- قاعدة بيانات Supabase مجانية
+- 11+ أداة ذكية
+- Docker Support
+- Flutter Mobile App
 
-## 📚 التوثيق
-- [ملخص التحديث v2.0](./VERSION_2_UPDATE.md)
-- [دليل النماذج المتعددة](./MULTI_MODEL_GUIDE.md)
-- [إعداد ACE3](./ACE3_SETUP.md)
-- [أمثلة سريعة](./QUICK_EXAMPLES.md)
+## 🚀 البدء السريع
 
----
-تم التطوير بواسطة ❤️ للمطورين العرب
+```bash
+# 1. تثبيت المكتبات
+npm install
+
+# 2. إعداد المتغيرات
+cp .env.example .env
+# أضف المفاتيح في .env
+
+# 3. التشغيل
+npm start
+
+# 4. مع Docker
+docker-compose up -d
+```
+
+## 📋 API Endpoints
+
+```txt
+GET  /health              فحص الصحة
+GET  /api/info            معلومات الخادم
+GET  /api/models          قائمة النماذج
+POST /api/models/switch   تبديل النموذج
+POST /api/chat            إرسال رسالة للمساعد
+GET  /api/tools           قائمة الأدوات
+POST /api/tools/execute   تنفيذ أداة
+```
+
+## 📝 ملفات التوثيق
+
+- [SETUP.md](./SETUP.md)
+- [API.md](./API.md)
+- [DEPLOYMENT.md](./DEPLOYMENT.md)
+
+## 📝 الترخيص
+
+MIT
