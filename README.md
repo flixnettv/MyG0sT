@@ -40,6 +40,40 @@ GET  /api/tools           قائمة الأدوات
 POST /api/tools/execute   تنفيذ أداة
 ```
 
+
+## 📱 Flutter APK
+
+```bash
+# من جذر المشروع
+./scripts_build_apk.sh
+```
+
+موقع ملف الـ APK بعد البناء:
+- `flutter_app/build/app/outputs/flutter-apk/app-release.apk`
+
+دليل إضافي:
+- [flutter_app/BUILD_APK.md](./flutter_app/BUILD_APK.md)
+
+
+## ☁️ النشر المباشر (Vercel / Cloudflare)
+
+### Vercel
+```bash
+npm i -g vercel
+vercel
+vercel --prod
+```
+
+### Cloudflare Worker (Proxy)
+1) انشر الباكند أولاً على Vercel.
+2) حدّث `BACKEND_ORIGIN` في `wrangler.toml`.
+3) انشر:
+```bash
+npm run deploy:cloudflare
+```
+
+تفاصيل كاملة في: [DEPLOYMENT.md](./DEPLOYMENT.md)
+
 ## 📝 ملفات التوثيق
 
 - [SETUP.md](./SETUP.md)
