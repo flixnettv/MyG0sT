@@ -50,6 +50,7 @@ Worker files:
 ---
 
 ## 3) Docker (Alternative)
+## Docker
 1. Build image:
    - `npm run docker:build`
 2. Push image:
@@ -58,4 +59,5 @@ Worker files:
    - `npm run docker:up`
 
 ## Compose Logs
+## Compose
 - `docker-compose logs -f`
