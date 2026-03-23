@@ -1,0 +1,6 @@
+name = "myghost-v2"
+main = "cloudflare/worker.js"
+compatibility_date = "2026-03-23"
+
+[vars]
+BACKEND_ORIGIN = "https://your-vercel-project.vercel.app"
